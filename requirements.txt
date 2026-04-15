@@ -1,0 +1,20 @@
+# Core extraction & document generation
+pandas
+openpyxl
+xlrd
+python-docx
+
+# Environment config
+python-dotenv
+
+# ── Telegram interface ────────────────────────────────────────
+# python-telegram-bot framework — handles bot commands and messages
+python-telegram-bot
+
+# ── Web server (required for webhook mode on Railway) ─────────
+# FastAPI — lightweight web framework for the webhook endpoint
+fastapi
+# Uvicorn — ASGI server that runs the FastAPI app
+uvicorn[standard]
+# python-multipart — required by FastAPI for file upload support
+python-multipart
