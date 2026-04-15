@@ -188,6 +188,12 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Download the file from Telegram servers to local disk
     file = await context.bot.get_file(doc.file_id)  # Get file object with download URL
     input_path = os.path.join("input", doc.file_name)  # Save to input/ directory
+
+    # Ensure input/ and output/ directories exist on Railway (ephemeral filesystem).
+    # These dirs aren't deployed because Git doesn't track empty folders.
+    os.makedirs("input", exist_ok=True)   # Create input/ if it doesn't exist
+    os.makedirs(OUTPUT_DIR, exist_ok=True) # Create output/ if it doesn't exist
+
     await file.download_to_drive(input_path)  # Actually download the file
 
     try:
