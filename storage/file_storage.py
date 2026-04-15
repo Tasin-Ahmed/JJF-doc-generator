@@ -22,7 +22,7 @@ def save_json(data: Dict[str, Any], output_dir: str, filename: str) -> str:
     path = os.path.join(output_dir, filename)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"✓ Saved JSON: {path}")
+    # print(f"✓ Saved JSON: {path}")
     return path
 
 
@@ -31,7 +31,7 @@ def load_json(output_dir: str, filename: str) -> Dict[str, Any]:
     path = os.path.join(output_dir, filename)
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    print(f"✓ Loaded JSON: {path}")
+    # print(f"✓ Loaded JSON: {path}")
     return data
 
 
@@ -40,7 +40,7 @@ def save_docx(doc, output_dir: str, filename: str) -> str:
     ensure_dir(output_dir)
     path = os.path.join(output_dir, filename)
     doc.save(path)
-    print(f"✓ Saved DOCX: {path}")
+    # print(f"✓ Saved DOCX: {path}")
     return path
 
 

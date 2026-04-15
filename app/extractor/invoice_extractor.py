@@ -57,11 +57,11 @@ class CommercialInvoiceExtractor:
             elif sheet_name == 'PL DETAILS':
                 self.pl_details_data = df
 
-            print(f"✓ Loaded sheet: {sheet_name} ({df.shape[0]} rows x {df.shape[1]} cols)")
+            # print(f"✓ Loaded sheet: {sheet_name} ({df.shape[0]} rows x {df.shape[1]} cols)")
             return df
 
         except Exception as e:
-            print(f"✗ Error loading file: {e}")
+            # print(f"✗ Error loading file: {e}")
             raise
 
     # ── Cell / Search Helpers ─────────────────────────────────────────────────
@@ -127,7 +127,7 @@ class CommercialInvoiceExtractor:
             if any(v.lower() in cell for v in header_mappings['pallet_no']):
                 pallet_positions.append(col_idx)
 
-        print(f"  ✓ Found {len(pallet_positions)} table instance(s) at columns: {pallet_positions}")
+        # print(f"  ✓ Found {len(pallet_positions)} table instance(s) at columns: {pallet_positions}")
 
         table_groups = []
         for pallet_col in pallet_positions:
@@ -143,14 +143,14 @@ class CommercialInvoiceExtractor:
                         break
             if len(group) == 4:
                 table_groups.append(group)
-                print(f"    ✓ Table at column {pallet_col}: {group}")
+                # print(f"    ✓ Table at column {pallet_col}: {group}")
             else:
                 print(f"    ⚠ Incomplete table at column {pallet_col}: {group}")
 
         return table_groups
 
     def extract_packing_list_details(self) -> Dict[str, Any]:
-        print("\n--- Extracting Packing List Details ---")
+        # print("\n--- Extracting Packing List Details ---")
 
         if self.pl_details_data is None:
             self.load_file('PL DETAILS')
@@ -168,20 +168,20 @@ class CommercialInvoiceExtractor:
 
         header_pos = self.find_text_in_sheet("Pallet No", df=df)
         if not header_pos:
-            print("⚠ Could not find packing list table header")
+            # print("⚠ Could not find packing list table header")
             return result
 
         header_row = header_pos[0]
-        print(f"✓ Found packing list header at row: {header_row}")
+        # print(f"✓ Found packing list header at row: {header_row}")
 
         table_groups = self.find_all_packing_list_headers(header_row, df)
         if not table_groups:
-            print("⚠ No complete table groups found")
+            # print("⚠ No complete table groups found")
             return result
 
         data_start = header_row + 1
         for table_idx, cols in enumerate(table_groups):
-            print(f"\n  Extracting from table {table_idx + 1}...")
+            # print(f"\n  Extracting from table {table_idx + 1}...")
             for offset in range(40):
                 row = data_start + offset
                 if row >= len(df):
@@ -209,7 +209,7 @@ class CommercialInvoiceExtractor:
                         if v:
                             record['net_weight_kgs'] = float(v)
                     result['packing_list'].append(record)
-                    print(f"    ✓ Pallet {record['pallet_no']}: {record['no_of_spool']} spools")
+                    # print(f"    ✓ Pallet {record['pallet_no']}: {record['no_of_spool']} spools")
                 except Exception as e:
                     print(f"    ⚠ Row {row}: {e}")
 
@@ -223,7 +223,7 @@ class CommercialInvoiceExtractor:
                     try:
                         if v and v.lower() != 'kgs':
                             result['summary'][key] = float(v)
-                            print(f"    ✓ {label}: {v} kgs")
+                            # print(f"    ✓ {label}: {v} kgs")
                             break
                     except Exception:
                         continue
@@ -231,8 +231,8 @@ class CommercialInvoiceExtractor:
         result['summary']['total_pallets'] = len(result['packing_list'])
         result['summary']['total_spools']  = sum(i['no_of_spool'] for i in result['packing_list'])
 
-        print(f"\n✓ Packing list done — {result['summary']['total_pallets']} pallets, "
-              f"{result['summary']['total_spools']} spools")
+        # print(f"\n✓ Packing list done — {result['summary']['total_pallets']} pallets, "
+            #   f"{result['summary']['total_spools']} spools")
         return result
 
     # ── Banking Details ───────────────────────────────────────────────────────
@@ -277,7 +277,7 @@ class CommercialInvoiceExtractor:
     def extract_banking_details(self, label_column: int = 1,
                                 value_column: int = 3) -> Dict[str, Any]:
         banking = {}
-        print("\n--- Extracting Banking Details ---")
+        # print("\n--- Extracting Banking Details ---")
 
         first_field  = list(self.BANKING_FIELDS_CONFIG.keys())[0]
         first_labels = self.BANKING_FIELDS_CONFIG[first_field]['label_variations']
@@ -288,11 +288,11 @@ class CommercialInvoiceExtractor:
                 break
 
         if not start_pos:
-            print("⚠ Banking details section not found")
+            # print("⚠ Banking details section not found")
             return banking
 
         current_row = start_pos[0]
-        print(f"✓ Found banking section at row: {current_row}")
+        # print(f"✓ Found banking section at row: {current_row}")
 
         for field_name, cfg in self.BANKING_FIELDS_CONFIG.items():
             found = False
@@ -307,18 +307,18 @@ class CommercialInvoiceExtractor:
                         if cfg['parse_details']:
                             parsed = self.parse_bank_details(value)
                             banking[field_name] = parsed
-                            print(f"✓ {field_name}: bank={parsed['bank_name']}, "
-                                  f"account={parsed['account_number']}")
+                            # print(f"✓ {field_name}: bank={parsed['bank_name']}, "
+                                #   f"account={parsed['account_number']}")
                         else:
                             banking[field_name] = {'full_text': value}
-                            print(f"✓ {field_name}: {value[:50]}")
+                            # print(f"✓ {field_name}: {value[:50]}")
                         found = True
                         current_row = row + 1
                         break
                 if found:
                     break
             if not found:
-                print(f"⚠ Field '{field_name}' not found")
+                # print(f"⚠ Field '{field_name}' not found")
                 banking[field_name] = {}
 
         return banking
@@ -338,7 +338,7 @@ class CommercialInvoiceExtractor:
             col = self.find_column_by_header(variations[0], header_row, variations[1:])
             if col is not None:
                 columns[field] = col
-                print(f"  ✓ '{field}' at column {col}")
+                # print(f"  ✓ '{field}' at column {col}")
             else:
                 print(f"  ⚠ Header '{field}' not found")
         return columns
@@ -450,11 +450,11 @@ class CommercialInvoiceExtractor:
             'marks_and_nos': '', 'description': '',
             'quantity_mt': 0, 'unit_price_usd': 0, 'total_amount_usd': 0
         }
-        print("\n--- Extracting Goods Description ---")
+        # print("\n--- Extracting Goods Description ---")
 
         pos = self.find_text_in_sheet("MARKS & NOS")
         if not pos:
-            print("⚠ Could not find 'MARKS & NOS' header")
+            # print("⚠ Could not find 'MARKS & NOS' header")
             return goods
 
         header_row = pos[0]
@@ -479,7 +479,7 @@ class CommercialInvoiceExtractor:
                     goods['quantity_mt']      = qty
                     goods['unit_price_usd']   = price
                     goods['total_amount_usd'] = total
-                    print(f"✓ Qty: {qty} MT | Price: ${price} | Total: ${total}")
+                    # print(f"✓ Qty: {qty} MT | Price: ${price} | Total: ${total}")
                     break
             except Exception:
                 continue
@@ -495,11 +495,11 @@ class CommercialInvoiceExtractor:
 
     def extract_container_info(self) -> List[Dict[str, Any]]:
         containers = []
-        print("\n--- Extracting Container Information ---")
+        # print("\n--- Extracting Container Information ---")
 
         pos = self.find_text_in_sheet("CONTAINER NO")
         if not pos:
-            print("⚠ Could not find 'CONTAINER NO' header")
+            # print("⚠ Could not find 'CONTAINER NO' header")
             return containers
 
         header_row = pos[0]
@@ -545,10 +545,10 @@ class CommercialInvoiceExtractor:
                     pass
 
             containers.append(c)
-            print(f"✓ Container: {container_no}")
+            # print(f"✓ Container: {container_no}")
             row += 1
 
-        print(f"✓ Total containers: {len(containers)}")
+        # print(f"✓ Total containers: {len(containers)}")
         return containers
 
     # ── Main Extract ──────────────────────────────────────────────────────────
@@ -557,9 +557,9 @@ class CommercialInvoiceExtractor:
         if self.data is None:
             raise ValueError("No data loaded. Call load_file() first.")
 
-        print("\n" + "=" * 60)
-        print("EXTRACTING INVOICE DATA")
-        print("=" * 60)
+        # print("\n" + "=" * 60)
+        # print("EXTRACTING INVOICE DATA")
+        # print("=" * 60)
 
         self.invoice_data = {
             'shipper':          self.extract_shipper_info(),
@@ -576,5 +576,5 @@ class CommercialInvoiceExtractor:
         if include_packing_list:
             self.invoice_data['packing_list_details'] = self.extract_packing_list_details()
 
-        print("\n✓ Extraction complete")
+        # print("\n✓ Extraction complete")
         return self.invoice_data

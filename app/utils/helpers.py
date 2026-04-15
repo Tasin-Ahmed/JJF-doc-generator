@@ -40,9 +40,9 @@ def validate_extracted_data(invoice_data: Dict[str, Any]) -> Dict[str, list]:
 
 def print_validation_report(issues: Dict[str, list]):
     """Print a formatted validation report to stdout."""
-    print("\n" + "=" * 60)
-    print("VALIDATION REPORT")
-    print("=" * 60)
+    # print("\n" + "=" * 60)
+    # print("VALIDATION REPORT")
+    # print("=" * 60)
 
     if not issues['errors'] and not issues['warnings']:
         print("\n✓ All validations passed!")
@@ -56,7 +56,7 @@ def print_validation_report(issues: Dict[str, list]):
             for w in issues['warnings']:
                 print(f"   • {w}")
 
-    print("=" * 60)
+    # print("=" * 60)
 
 
 def generate_field_summary(invoice_data: Dict[str, Any]) -> str:
