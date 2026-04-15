@@ -45,9 +45,10 @@ def process_invoice(excel_file_path: str,
             "summary"              : str,           # human-readable field summary
         }
     """
-    print(f"\n{'='*60}")
-    print(f"Processing: {excel_file_path}")
-    print(f"{'='*60}")
+    # Commented out — exposes file paths in production logs
+    # print(f"\n{'='*60}")
+    # print(f"Processing: {excel_file_path}")
+    # print(f"{'='*60}")
 
     # ── Step 1: Extract ───────────────────────────────────────────────────────
     extractor = CommercialInvoiceExtractor(excel_file_path)
@@ -56,8 +57,9 @@ def process_invoice(excel_file_path: str,
 
     # ── Step 2: Validate ──────────────────────────────────────────────────────
     validation = validate_extracted_data(invoice_data)
-    print_validation_report(validation)
-    print(generate_field_summary(invoice_data))
+    # Commented out — exposes extracted invoice data in production logs
+    # print_validation_report(validation)
+    # print(generate_field_summary(invoice_data))
 
     # ── Step 3: Save JSON ─────────────────────────────────────────────────────
     json_path = save_json(invoice_data, output_dir, JSON_OUTPUT_FILENAME)
@@ -66,10 +68,11 @@ def process_invoice(excel_file_path: str,
     invoice_docx_path      = create_commercial_invoice(invoice_data, assets_dir, output_dir)
     packing_list_docx_path = create_packing_list(invoice_data, assets_dir, output_dir)
 
-    print(f"\n✓ All done.")
-    print(f"  JSON:          {json_path}")
-    print(f"  Invoice:       {invoice_docx_path}")
-    print(f"  Packing List:  {packing_list_docx_path}")
+    # Commented out — exposes output file paths in production logs
+    # print(f"\n✓ All done.")
+    # print(f"  JSON:          {json_path}")
+    # print(f"  Invoice:       {invoice_docx_path}")
+    # print(f"  Packing List:  {packing_list_docx_path}")
 
     return {
         "invoice_data":              invoice_data,
