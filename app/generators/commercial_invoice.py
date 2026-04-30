@@ -124,7 +124,7 @@ def build_amount_in_words(doc):
 
     p = c.add_paragraph()
     set_paragraph_spacing(p)
-    apply_run_format(p.add_run('USD IN WORD: '),        bold=True, size_pt=11)
+    apply_run_format(p.add_run('AMOUNT IN WORD: '),        bold=True, size_pt=11)
     apply_run_format(p.add_run('{amount_in_words}'),    size_pt=11)
 
 

@@ -418,7 +418,7 @@ class CommercialInvoiceExtractor:
                 if dm:
                     details['bl_date'] = dm.group(1)
 
-        pos = self.find_text_in_sheet("PI NO")
+        pos = self.find_text_in_sheet("PROFORMA INVOICE")
         if pos:
             text = self.extract_cell_value(pos[0], pos[1] + 2)
             m = re.search(r'([A-Z0-9\/\-]+)\s+DATED[:\s]+(\d{2}/\d{2}/\d{4})', text, re.IGNORECASE)
@@ -487,10 +487,12 @@ class CommercialInvoiceExtractor:
         return goods
 
     def extract_amount_in_words(self) -> str:
-        pos = self.find_text_in_sheet("USD IN WORD")
+        # pos = self.find_text_in_sheet("USD IN WORD")
+        pos = self.find_text_in_sheet("IN WORD")
         if pos:
             text = self.extract_cell_value(pos[0], pos[1])
-            return text.replace("USD IN WORD :", "").replace("USD IN WORD:", "").strip()
+            # return text.replace("USD IN WORD :", "").replace("USD IN WORD:", "").strip()
+            return re.sub(r'^.*?IN WORD\s*:\s*', '', text).strip()
         return ""
 
     def extract_container_info(self) -> List[Dict[str, Any]]:
